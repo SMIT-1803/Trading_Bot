@@ -1,0 +1,46 @@
+exchange:
+  name: kraken
+  enable_rate_limit: true
+  timeout_ms: 30000
+  max_retries: 5
+  retry_backoff_seconds: 2
+
+timeframes:
+  regime: 1d
+  execution: 4h
+
+data:
+  root_dir: data/raw/kraken
+  format: csv
+  history_start: "2020-01-01"
+
+costs:
+  fee_rate: 0.00040
+  slippage_rate: 0.00045
+
+risk:
+  # 0.005 = 0.5% risk per trade
+  risk_per_trade: 0.005
+  max_positions: 1
+  max_symbol_allocation: 1.0
+
+regime:
+  lookback_days: 60
+  low_vol_pct: 30
+  high_vol_pct: 65
+
+run:
+  mode: backtest
+
+  backtest_start: "2021-01-01"
+  backtest_end: "2024-12-31"
+
+  forward_start: "2025-01-01"
+  forward_end: "2025-12-31"
+
+  # SAFETY SWITCHES
+  live_enabled: false
+  trade_enabled: false
+
+  # For tiny live later (capping order size)
+  max_order_notional_usd: 50
