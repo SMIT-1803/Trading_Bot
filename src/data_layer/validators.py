@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 def validate_ohlcv(df, timeframe):
     schema_validator(df)
     df = timestamp_validator(df)
@@ -31,6 +32,7 @@ def schema_validator(df):
                 f"DATA GAP: Column '{col}' contains {missing_values_count} missing (NaN) values."
             )
 
+
 # timestamp indes is datetime
 # timestamps can be parsed
 # timestamps are UTC
@@ -59,7 +61,6 @@ def timestamp_validator(df):
     return df
 
 
-
 def candle_integrity_validator(df):
     cond1 = df["high"] >= df["low"]
 
@@ -78,6 +79,7 @@ def candle_integrity_validator(df):
         raise RuntimeError(
             f"INTEGRITY ERROR: {invalid_count} candles have impossible price/volume values. First failure at: {first_bad}"
         )
+
 
 def timeframe_sanity_validator(df, timeframe):
     if len(df) > 50:
@@ -131,4 +133,3 @@ def timeframe_sanity_validator(df, timeframe):
 # df.set_index("timestamp", inplace=True)
 # print(df)
 # validate_ohlcv(df, "4h")
-
