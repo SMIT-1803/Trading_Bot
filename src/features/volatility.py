@@ -68,6 +68,16 @@ def add_volatility_regime(
     return new_df
 
 
+def add_volatility_features(
+    ohlcv_4h: DataFrame,
+    atr_window: int = 14,
+    pct_window: int = 360,
+    thresholds: tuple[float, float] = (0.35, 0.65),
+) -> DataFrame:
+    df = get_normalized_atr(ohlcv_4h, window=atr_window)
+    df = add_volatility_regime(df, W=pct_window, thresholds=thresholds)
+    return df
+
 ######################### TESTS ######################
 # df = load_ohlcv("kraken", "BTC/USDT", "4h", "data/raw")
 # df_norm = get_normalized_atr(df, 14)
