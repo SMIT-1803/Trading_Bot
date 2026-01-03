@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from pandas import DataFrame
-from validators import validate_ohlcv
+from src.data_layer.validators import validate_ohlcv
 
 
 def symbol_to_path_component(symbol: str) -> str:

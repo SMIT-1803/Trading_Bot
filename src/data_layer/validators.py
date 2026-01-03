@@ -33,7 +33,7 @@ def schema_validator(df):
             )
 
 
-# timestamp indes is datetime
+# timestamp index is datetime
 # timestamps can be parsed
 # timestamps are UTC
 # no duplicates
