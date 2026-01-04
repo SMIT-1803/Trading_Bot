@@ -1,8 +1,6 @@
 import pandas as pd
 from pandas import DataFrame
 import numpy as np
-from src.data_layer.storage import load_ohlcv
-from src.features.volatility import add_volatility_features
 
 def add_daily_ema_bias(df_1d: DataFrame, ema_span: int = 200) -> DataFrame:
     out = df_1d.copy()
@@ -52,7 +50,8 @@ def add_can_trade(df_4h: DataFrame) -> DataFrame:
     return out
 
 ################### Checks ########################
-
+# from src.data_layer.storage import load_ohlcv
+# from src.features.volatility import add_volatility_features
 # df_1d = load_ohlcv("kraken","BTC/USDT","1d","data/raw")
 # df_4h = load_ohlcv("kraken","BTC/USDT","4h","data/raw")
 # out_4h = add_volatility_features(df_4h)
