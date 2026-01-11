@@ -1,4 +1,5 @@
 import pandas as pd
+pd.set_option('future.no_silent_downcasting', True)
 from pandas import DataFrame
 import numpy as np
 
