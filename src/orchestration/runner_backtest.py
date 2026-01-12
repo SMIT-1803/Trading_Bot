@@ -2,7 +2,7 @@ from src.data_layer.storage import load_ohlcv
 from src.orchestration.pipeline import build_execution_frame
 from src.backtest.simulator import run_simulation
 from src.backtest.metrics import compute_trade_metrics, compute_equity_metrics
-from src.backtest.reports import save_backtest_outputs
+from src.backtest.reports import save_backtest_outputs, build_report_pack
 
 from pathlib import Path
 import yaml
@@ -195,6 +195,7 @@ def main():
         / f"{args['exchange']}_{safe_symbol}_{args['timeframe_4h']}_{run_id}"
     )
     save_backtest_outputs(result, out_dir)
+    build_report_pack(result, out_dir, timeframe=args["timeframe_4h"])
     print(f"Saved outputs to: {out_dir}")
 
 
