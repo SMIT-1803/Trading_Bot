@@ -56,12 +56,12 @@ def add_volatility_regime(
     new_df.loc[high_vol_cond, "vol_regime"] = "HIGH_VOL"
 
     new_df["can_enter"] = False
-    # new_df.loc[new_df["vol_regime"] == "LOW_VOL", "can_enter"] = False
+    # new_df.loc[new_df["vol_regime"] == "LOW_VOL", "can_enter"] = True
     new_df.loc[new_df["vol_regime"] == "TRADE_OK", "can_enter"] = True
-    # new_df.loc[new_df["vol_regime"] == "HIGH_VOL", "can_enter"] = False
+    new_df.loc[new_df["vol_regime"] == "HIGH_VOL", "can_enter"] = True
 
     new_df["risk_multiplier"] = 0.0
-    # new_df.loc[new_df["vol_regime"] == "LOW_VOL", "risk_multiplier"] = 0.0
+    # new_df.loc[new_df["vol_regime"] == "LOW_VOL", "risk_multiplier"] = 0.2
     new_df.loc[new_df["vol_regime"] == "TRADE_OK", "risk_multiplier"] = 1.0
     new_df.loc[new_df["vol_regime"] == "HIGH_VOL", "risk_multiplier"] = 0.5
 
