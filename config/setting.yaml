@@ -1,5 +1,5 @@
 exchange: kraken
-symbol: BTC/USDT
+symbol: BTC/USD
 
 data:
   root_dir: data/raw

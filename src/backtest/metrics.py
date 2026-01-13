@@ -59,8 +59,8 @@ def compute_trade_metrics(trades_df: DataFrame) -> dict:
     df = trades_df.copy()
     num_trades = len(df)
 
-    wins = df["pnl_usdt"] > 0
-    losses = df["pnl_usdt"] < 0
+    wins = df["pnl_usd"] > 0
+    losses = df["pnl_usd"] < 0
 
     num_wins = int(wins.sum())
     num_losses = int(losses.sum())
@@ -69,8 +69,8 @@ def compute_trade_metrics(trades_df: DataFrame) -> dict:
     r = df["r_multiple"]
     expectancy_r = r.mean()
 
-    profits_series = df.loc[wins, "pnl_usdt"]
-    losses_series = df.loc[losses, "pnl_usdt"]
+    profits_series = df.loc[wins, "pnl_usd"]
+    losses_series = df.loc[losses, "pnl_usd"]
 
     profits = float(profits_series.sum()) if len(profits_series) else 0.0
     abs_losses = float((-losses_series).sum()) if len(losses_series) else 0.0

@@ -53,8 +53,8 @@ def add_can_trade(df_4h: DataFrame) -> DataFrame:
 ################### Checks ########################
 # from src.data_layer.storage import load_ohlcv
 # from src.features.volatility import add_volatility_features
-# df_1d = load_ohlcv("kraken","BTC/USDT","1d","data/raw")
-# df_4h = load_ohlcv("kraken","BTC/USDT","4h","data/raw")
+# df_1d = load_ohlcv("kraken","BTC/USD","1d","data/raw")
+# df_4h = load_ohlcv("kraken","BTC/USD","4h","data/raw")
 # out_4h = add_volatility_features(df_4h)
 # out = add_daily_ema_bias(df_1d)
 # out_4h = add_trend_ok_to_execution(out_4h, out)

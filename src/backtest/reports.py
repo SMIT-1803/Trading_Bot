@@ -91,18 +91,18 @@ def build_report_pack(result: dict, out_dir: Path, *, timeframe: str = "4h") -> 
     with (out_dir / "exit_reason_counts.json").open("w", encoding="utf-8") as f:
         json.dump(_clean(reason_counts), f, indent=2)
 
-    if "reason" in t.columns and "pnl_usdt" in t.columns:
+    if "reason" in t.columns and "pnl_usd" in t.columns:
         pnl_by_reason = (
             t.groupby("reason", dropna=False)
             .agg(
-                num_trades=("pnl_usdt", "size"),
-                total_pnl=("pnl_usdt", "sum"),
-                avg_pnl=("pnl_usdt", "mean"),
-                median_pnl=("pnl_usdt", "median"),
+                num_trades=("pnl_usd", "size"),
+                total_pnl=("pnl_usd", "sum"),
+                avg_pnl=("pnl_usd", "mean"),
+                median_pnl=("pnl_usd", "median"),
                 mean_r=(
                     ("r_multiple", "mean")
                     if "r_multiple" in t.columns
-                    else ("pnl_usdt", "mean")
+                    else ("pnl_usd", "mean")
                 ),
             )
             .sort_values("total_pnl", ascending=True)
@@ -133,8 +133,8 @@ def build_report_pack(result: dict, out_dir: Path, *, timeframe: str = "4h") -> 
         hold_stats["median_bars_held"] = float(np.nanmedian(bars_held))
         hold_stats["max_bars_held"] = float(np.nanmax(bars_held))
 
-        if "pnl_usdt" in t.columns:
-            wins = t["pnl_usdt"] > 0
+        if "pnl_usd" in t.columns:
+            wins = t["pnl_usd"] > 0
             hold_stats["avg_bars_winners"] = (
                 float(np.nanmean(bars_held[wins])) if wins.any() else np.nan
             )
@@ -145,11 +145,11 @@ def build_report_pack(result: dict, out_dir: Path, *, timeframe: str = "4h") -> 
         json.dump(_clean(hold_stats), f, indent=2)
 
     # Histograms
-    if "pnl_usdt" in t.columns:
+    if "pnl_usd" in t.columns:
         plt.figure()
-        plt.hist(t["pnl_usdt"].dropna().values, bins=40)
+        plt.hist(t["pnl_usd"].dropna().values, bins=40)
         plt.title("PnL Histogram")
-        plt.xlabel("PnL (USDT)")
+        plt.xlabel("PnL (USD)")
         plt.ylabel("Count")
         plt.tight_layout()
         plt.savefig(out_dir / "pnl_hist.png")
@@ -172,17 +172,17 @@ def build_report_pack(result: dict, out_dir: Path, *, timeframe: str = "4h") -> 
         regimes = ex["vol_regime"].reindex(entry_ts, method="ffill")
         t["entry_vol_regime"] = regimes.values
 
-        if "pnl_usdt" in t.columns:
+        if "pnl_usd" in t.columns:
             pnl_by_regime = (
                 t.groupby("entry_vol_regime", dropna=False)
                 .agg(
-                    num_trades=("pnl_usdt", "size"),
-                    total_pnl=("pnl_usdt", "sum"),
-                    avg_pnl=("pnl_usdt", "mean"),
+                    num_trades=("pnl_usd", "size"),
+                    total_pnl=("pnl_usd", "sum"),
+                    avg_pnl=("pnl_usd", "mean"),
                     mean_r=(
                         ("r_multiple", "mean")
                         if "r_multiple" in t.columns
-                        else ("pnl_usdt", "mean")
+                        else ("pnl_usd", "mean")
                     ),
                 )
                 .sort_values("total_pnl", ascending=True)

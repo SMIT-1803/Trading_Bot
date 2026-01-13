@@ -125,7 +125,7 @@ def update_ohlcv(
 
 ############################## TESTS ##############################
 
-# df = update_ohlcv("kraken", "BTC/USDT", "4h", "data/raw")
+# df = update_ohlcv("kraken", "BTC/USD", "4h", "data/raw")
 # print(df)
 # print(df.index.tz)
 # print(df.index.is_monotonic_increasing)

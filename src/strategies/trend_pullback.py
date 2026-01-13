@@ -67,9 +67,9 @@ def add_initial_stop_and_risk(df_4h:DataFrame, k:float=1.5)->DataFrame:
 #     add_trend_ok_to_execution,
 # )
 
-# df_1d = load_ohlcv("kraken", "BTC/USDT", "1d", "data/raw")
+# df_1d = load_ohlcv("kraken", "BTC/USD", "1d", "data/raw")
 # df_1d = add_daily_ema_bias(df_1d)
-# df_4h = load_ohlcv("kraken", "BTC/USDT", "4h", "data/raw")
+# df_4h = load_ohlcv("kraken", "BTC/USD", "4h", "data/raw")
 
 # df_4h = add_volatility_features(df_4h)
 # df_4h = add_trend_ok_to_execution(df_4h, df_1d)

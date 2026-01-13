@@ -5,7 +5,7 @@ from src.data_layer.validators import validate_ohlcv
 
 
 def symbol_to_path_component(symbol: str) -> str:
-    """Convert CCXT symbol (e.g. BTC/USDT) to filesystem-safe name (BTC-USDT)."""
+    """Convert CCXT symbol (e.g. BTC/USD) to filesystem-safe name (BTC-USD)."""
     symbol = symbol.strip().replace("/", "-")
     return symbol
 

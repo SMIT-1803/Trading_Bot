@@ -79,7 +79,7 @@ def add_volatility_features(
     return df
 
 ######################### TESTS ######################
-# df = load_ohlcv("kraken", "BTC/USDT", "4h", "data/raw")
+# df = load_ohlcv("kraken", "BTC/USD", "4h", "data/raw")
 # df_norm = get_normalized_atr(df, 14)
 # df_norm = add_volatility_regime(df_norm)
 # print(df_norm)

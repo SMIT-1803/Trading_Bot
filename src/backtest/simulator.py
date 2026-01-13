@@ -92,7 +92,7 @@ def run_simulation(
           - entry_price, exit_price
           - initial_units, remaining_units
           - exit_reason
-          - total_pnl (USDT)
+          - total_pnl (USD)
           - partial_taken (bool)
           - R-multiple
           - cash_after
@@ -135,7 +135,7 @@ def run_simulation(
     partial_taken = False
     tp1_price = np.nan
     tp1_fraction = 0.5
-    realized_pnl_usdt = 0.0
+    realized_pnl_usd = 0.0
 
     trades: list[dict] = []
     equity_records: list[dict] = []
@@ -150,7 +150,7 @@ def run_simulation(
 
             if bool(row["entry_long"]):
                 partial_taken = False
-                realized_pnl_usdt = 0.0
+                realized_pnl_usd = 0.0
                 raw_entry = (
                     float(row["entry_price"])
                     if np.isfinite(row["entry_price"])
@@ -257,7 +257,7 @@ def run_simulation(
                 remaining_units -= units_sold
                 cash += units_sold * filled_tp1_exit
                 stop_price_state = entry_price_filled
-                realized_pnl_usdt += units_sold * (filled_tp1_exit - entry_price_filled)
+                realized_pnl_usd += units_sold * (filled_tp1_exit - entry_price_filled)
 
                 partial_taken = True
 
@@ -276,8 +276,8 @@ def run_simulation(
             if exit_trade:
                 filled_exit = apply_sell_cost(float(raw_exit), cost_rate)
 
-                final_pnl_usdt = remaining_units * (filled_exit - entry_price_filled)
-                total_pnl = realized_pnl_usdt + final_pnl_usdt
+                final_pnl_usd = remaining_units * (filled_exit - entry_price_filled)
+                total_pnl = realized_pnl_usd + final_pnl_usd
                 cash += remaining_units * filled_exit
 
                 # R multiple: PnL divided by initial risk (units * risk_per_unit)
@@ -295,7 +295,7 @@ def run_simulation(
                         "units": units,
                         "remaining_units": remaining_units,
                         "reason": exit_reason,
-                        "pnl_usdt": float(total_pnl),
+                        "pnl_usd": float(total_pnl),
                         "partial_taken": partial_taken,
                         "r_multiple": (
                             float(r_multiple) if np.isfinite(r_multiple) else np.nan
@@ -314,7 +314,7 @@ def run_simulation(
                 bars_held = 0
 
                 partial_taken = False
-                realized_pnl_usdt = 0.0
+                realized_pnl_usd = 0.0
                 tp1_price = np.nan
                 remaining_units = 0.0
 
