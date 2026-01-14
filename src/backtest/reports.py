@@ -17,20 +17,24 @@ def _clean(obj):
     return obj
 
 
-def save_backtest_outputs(result: dict, out_dir: Path) -> None:
+def save_backtest_outputs(result: dict, out_dir: Path, k_stop: float) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # DataFrames
-    result["trades_df"].to_csv(out_dir / "trades.csv", index=False)
-    result["equity_df"].to_csv(out_dir / "equity.csv")
-    result["execution_df"].to_csv(out_dir / "execution_df.csv")
+    result["trades_df"].to_csv(out_dir / f"trades_k={str(k_stop)}.csv", index=False)
+    result["equity_df"].to_csv(out_dir / f"equity_k={str(k_stop)}.csv")
+    result["execution_df"].to_csv(out_dir / f"execution_df_k={str(k_stop)}.csv")
 
     for name in ["trade_metrics", "equity_metrics", "counts", "config"]:
-        with (out_dir / f"{name}.json").open("w", encoding="utf-8") as f:
+        with (out_dir / f"{name}_k={str(k_stop)}.json").open(
+            "w", encoding="utf-8"
+        ) as f:
             json.dump(_clean(result.get(name, {})), f, indent=2)
 
 
-def build_report_pack(result: dict, out_dir: Path, *, timeframe: str = "4h") -> None:
+def build_report_pack(
+    result: dict, out_dir: Path, *, k_stop: float, timeframe: str = "4h"
+) -> None:
 
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -56,7 +60,7 @@ def build_report_pack(result: dict, out_dir: Path, *, timeframe: str = "4h") -> 
     plt.xlabel("Time")
     plt.ylabel("Equity")
     plt.tight_layout()
-    plt.savefig(out_dir / "equity_curve.png")
+    plt.savefig(out_dir / f"equity_curve_k={str(k_stop)}.png")
     plt.close()
 
     # Drawdown plot
@@ -69,16 +73,20 @@ def build_report_pack(result: dict, out_dir: Path, *, timeframe: str = "4h") -> 
     plt.xlabel("Time")
     plt.ylabel("Drawdown (fraction)")
     plt.tight_layout()
-    plt.savefig(out_dir / "drawdown.png")
+    plt.savefig(out_dir / f"drawdown_k={str(k_stop)}.png")
     plt.close()
 
     # Trade Info
 
     if trades_df is None or trades_df.empty:
-        with (out_dir / "exit_reason_counts.json").open("w", encoding="utf-8") as f:
+        with (out_dir / f"exit_reason_counts_k={str(k_stop)}.json").open(
+            "w", encoding="utf-8"
+        ) as f:
             json.dump({}, f, indent=2)
 
-        with (out_dir / "hold_time_stats.json").open("w", encoding="utf-8") as f:
+        with (out_dir / f"hold_time_stats_k={str(k_stop)}.json").open(
+            "w", encoding="utf-8"
+        ) as f:
             json.dump({"note": "No trades"}, f, indent=2)
         return
 
@@ -88,7 +96,9 @@ def build_report_pack(result: dict, out_dir: Path, *, timeframe: str = "4h") -> 
     else:
         reason_counts = {}
 
-    with (out_dir / "exit_reason_counts.json").open("w", encoding="utf-8") as f:
+    with (out_dir / f"exit_reason_counts_k={str(k_stop)}.json").open(
+        "w", encoding="utf-8"
+    ) as f:
         json.dump(_clean(reason_counts), f, indent=2)
 
     if "reason" in t.columns and "pnl_usd" in t.columns:
@@ -107,9 +117,11 @@ def build_report_pack(result: dict, out_dir: Path, *, timeframe: str = "4h") -> 
             )
             .sort_values("total_pnl", ascending=True)
         )
-        pnl_by_reason.to_csv(out_dir / "pnl_by_reason.csv")
+        pnl_by_reason.to_csv(out_dir / f"pnl_by_reason_k={str(k_stop)}.csv")
     else:
-        pd.DataFrame().to_csv(out_dir / "pnl_by_reason.csv", index=False)
+        pd.DataFrame().to_csv(
+            out_dir / f"pnl_by_reason_k={str(k_stop)}.csv", index=False
+        )
 
     # Hold time stats (bars)
 
@@ -141,7 +153,9 @@ def build_report_pack(result: dict, out_dir: Path, *, timeframe: str = "4h") -> 
             hold_stats["avg_bars_losers"] = (
                 float(np.nanmean(bars_held[~wins])) if (~wins).any() else np.nan
             )
-    with (out_dir / "hold_time_stats.json").open("w", encoding="utf-8") as f:
+    with (out_dir / f"hold_time_stats_k={str(k_stop)}.json").open(
+        "w", encoding="utf-8"
+    ) as f:
         json.dump(_clean(hold_stats), f, indent=2)
 
     # Histograms
@@ -152,7 +166,7 @@ def build_report_pack(result: dict, out_dir: Path, *, timeframe: str = "4h") -> 
         plt.xlabel("PnL (USD)")
         plt.ylabel("Count")
         plt.tight_layout()
-        plt.savefig(out_dir / "pnl_hist.png")
+        plt.savefig(out_dir / f"pnl_hist_k={str(k_stop)}.png")
         plt.close()
 
     if "r_multiple" in t.columns:
@@ -162,7 +176,7 @@ def build_report_pack(result: dict, out_dir: Path, *, timeframe: str = "4h") -> 
         plt.xlabel("R")
         plt.ylabel("Count")
         plt.tight_layout()
-        plt.savefig(out_dir / "r_multiple_hist.png")
+        plt.savefig(out_dir / f"r_multiple_hist_k={str(k_stop)}.png")
         plt.close()
 
     if "vol_regime" in execution_df.columns and "entry_time" in t.columns:
@@ -187,8 +201,12 @@ def build_report_pack(result: dict, out_dir: Path, *, timeframe: str = "4h") -> 
                 )
                 .sort_values("total_pnl", ascending=True)
             )
-            pnl_by_regime.to_csv(out_dir / "pnl_by_vol_regime.csv")
+            pnl_by_regime.to_csv(out_dir / f"pnl_by_vol_regime_k={str(k_stop)}.csv")
         else:
-            pd.DataFrame().to_csv(out_dir / "pnl_by_vol_regime.csv", index=False)
+            pd.DataFrame().to_csv(
+                out_dir / f"pnl_by_vol_regime_k={str(k_stop)}.csv", index=False
+            )
     else:
-        pd.DataFrame().to_csv(out_dir / "pnl_by_vol_regime.csv", index=False)
+        pd.DataFrame().to_csv(
+            out_dir / f"pnl_by_vol_regime_k={str(k_stop)}.csv", index=False
+        )

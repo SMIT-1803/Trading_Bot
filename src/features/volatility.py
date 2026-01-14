@@ -62,7 +62,7 @@ def add_volatility_regime(
 
     new_df["risk_multiplier"] = 0.0
     # new_df.loc[new_df["vol_regime"] == "LOW_VOL", "risk_multiplier"] = 0.2
-    new_df.loc[new_df["vol_regime"] == "TRADE_OK", "risk_multiplier"] = 1.0
+    new_df.loc[new_df["vol_regime"] == "TRADE_OK", "risk_multiplier"] = 0.6
     new_df.loc[new_df["vol_regime"] == "HIGH_VOL", "risk_multiplier"] = 0.5
 
     return new_df
@@ -77,6 +77,7 @@ def add_volatility_features(
     df = get_normalized_atr(ohlcv_4h, window=atr_window)
     df = add_volatility_regime(df, W=pct_window, thresholds=thresholds)
     return df
+
 
 ######################### TESTS ######################
 # df = load_ohlcv("kraken", "BTC/USD", "4h", "data/raw")

@@ -175,8 +175,10 @@ def run_backtest_job(
             "risk_pct": risk_pct,
             "cost_rate": cost_rate,
             "max_hold_bars": max_hold_bars,
+            "k_stop": k_stop,
         },
     }
+
 
 def main():
     project_root = Path(__file__).resolve().parents[2]
@@ -194,8 +196,10 @@ def main():
         / "backtests"
         / f"{args['exchange']}_{safe_symbol}_{args['timeframe_4h']}_{run_id}"
     )
-    save_backtest_outputs(result, out_dir)
-    build_report_pack(result, out_dir, timeframe=args["timeframe_4h"])
+    save_backtest_outputs(result, out_dir, k_stop=args["k_stop"])
+    build_report_pack(
+        result, out_dir, k_stop=args["k_stop"], timeframe=args["timeframe_4h"]
+    )
     print(f"Saved outputs to: {out_dir}")
 
 

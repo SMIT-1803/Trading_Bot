@@ -114,6 +114,8 @@ def run_simulation(
         "risk_per_unit",
         "can_trade",
         "risk_multiplier",
+        "ema_fast_4h",
+        "vol_regime",
     }
     missing = required_columns - set(df_4h.columns)
     if missing:
@@ -136,6 +138,7 @@ def run_simulation(
     tp1_price = np.nan
     tp1_fraction = 0.5
     realized_pnl_usd = 0.0
+    regime = ""
 
     trades: list[dict] = []
     equity_records: list[dict] = []
@@ -149,6 +152,7 @@ def run_simulation(
             equity = cash
 
             if bool(row["entry_long"]):
+                regime = row["vol_regime"]
                 partial_taken = False
                 realized_pnl_usd = 0.0
                 raw_entry = (
@@ -229,6 +233,17 @@ def run_simulation(
                     cash  # fallback if close is bad (shouldn't happen after validation)
                 )
 
+            ema_now = (
+                float(row["ema_fast_4h"]) if np.isfinite(row["ema_fast_4h"]) else np.nan
+            )
+
+            if partial_taken and np.isfinite(ema_now):
+                stop_price_state = (
+                    ema_now
+                    if not np.isfinite(stop_price_state)
+                    else max(stop_price_state, ema_now)
+                )
+
             # Exit checks (priority order)
             exit_trade = False
             exit_reason = None
@@ -256,10 +271,17 @@ def run_simulation(
                 units_sold = remaining_units * tp1_fraction
                 remaining_units -= units_sold
                 cash += units_sold * filled_tp1_exit
-                stop_price_state = entry_price_filled
+                if np.isfinite(ema_now):
+                    stop_price_state = (
+                        ema_now
+                        if not np.isfinite(stop_price_state)
+                        else max(stop_price_state, ema_now)
+                    )
                 realized_pnl_usd += units_sold * (filled_tp1_exit - entry_price_filled)
 
                 partial_taken = True
+                if np.isfinite(filled_tp1_exit):
+                    equity = cash + remaining_units * filled_tp1_exit
 
             # 3) PERMISSION flip (close)
             elif (not bool(row["can_trade"])) and np.isfinite(close):
@@ -268,7 +290,9 @@ def run_simulation(
                 exit_trade = True
 
             # 4) TIME stop (close)
-            elif (bars_held >= int(max_hold_bars)) and np.isfinite(close):
+            elif (
+                bars_held >= (int(max_hold_bars) if regime == "HIGH_VOL" else 10)
+            ) and np.isfinite(close):
                 raw_exit = close
                 exit_reason = "TIME"
                 exit_trade = True
